@@ -1,73 +1,67 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  Avatar,
-  Box,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Input,
   Button,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Text,
-  Tooltip,
-  useDisclosure,
+  Box,
+  Spinner,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
-import { ChatState } from "../../Context/ContextProvider";
+import ChatLoading from "./ChatLoading";
+import UserListItem from "../userAvatar/UserListItem";
 
-function SideDrawer() {
-  const { user } = ChatState();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+function SideDrawer({ isOpen, onClose }) {
+  const [search, setSearch] = useState();
+  const [searchResult, setSearchResult] = useState();
+  const [loading, setLoading] = useState(false);
+  const handleSearch = () => {
+    try {
+      setLoading(true);
+      setTimeout(() => {
+        console.log("hello");
+        setLoading(false);
+      }, 3000);
+      // console.log("hello");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const accessChat = () => {};
   return (
-    <>
-      <Box
-        d="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        bg="white"
-        w="100%"
-        p="5px 10px 5px 10px"
-        borderWidth="5px"
-      >
-        <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button variant="ghost" onClick={onOpen}>
-            <SearchIcon />
-            <Text d={{ base: "none", md: "flex" }} px={4}>
-              Search User
-            </Text>
-          </Button>
-        </Tooltip>
-
-        <div>
-          <Menu>
-            <MenuButton p={1}>
-              <BellIcon fontSize="2xl" m={1} />
-            </MenuButton>
-            <MenuList pl={2}>
-              <MenuItem>Messages</MenuItem>
-            </MenuList>
-          </Menu>
-
-          <Menu>
-            <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
-              <Avatar
-                size="sm"
-                cursor="pointer"
-                name={user.name}
-                src={user.pic}
+    <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+        <DrawerBody>
+          <Box d="flex" pb={2}>
+            <Input
+              placeholder="Search by name or email"
+              mr={2}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button onClick={handleSearch}>Go</Button>
+          </Box>
+          {loading ? (
+            <ChatLoading />
+          ) : (
+            searchResult?.map((user) => (
+              <UserListItem
+                key={user._id}
+                user={user}
+                handleFunction={() => accessChat(user._id)}
               />
-            </MenuButton>
-            <MenuList>
-              {/* <ProfileModal user={user}>
-                <MenuItem>My Profile</MenuItem>{" "}
-              </ProfileModal> */}
-              <MenuDivider />
-              <MenuItem>Logout</MenuItem>
-            </MenuList>
-          </Menu>
-        </div>
-      </Box>
-    </>
+            ))
+          )}
+          {loading && <Spinner ml="auto" d="flex" />}
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
