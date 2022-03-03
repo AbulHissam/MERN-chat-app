@@ -76,7 +76,7 @@ function Navbar() {
         </div>
       </Box>
 
-      <SideDrawer isOpen={isOpen} onClose={onClose} />
+      <SideDrawer user={user} isOpen={isOpen} onClose={onClose} />
     </>
   );
 }

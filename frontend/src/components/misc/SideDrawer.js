@@ -1,33 +1,47 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   Input,
   Button,
   Box,
   Spinner,
+  useToast,
+  Text,
 } from "@chakra-ui/react";
 import ChatLoading from "./ChatLoading";
-import UserListItem from "../userAvatar/UserListItem";
+import UserListItem from "../UserAvatar/UserListItem";
 
-function SideDrawer({ isOpen, onClose }) {
+function SideDrawer({ user, isOpen, onClose }) {
+  const toast = useToast();
   const [search, setSearch] = useState();
   const [searchResult, setSearchResult] = useState();
   const [loading, setLoading] = useState(false);
-  const handleSearch = () => {
+  const handleSearch = async () => {
     try {
+      if (!search) {
+        toast({
+          title: "Type in something to search",
+          status: "warning",
+          duration: 2000,
+          isClosable: true,
+        });
+        return null;
+      }
       setLoading(true);
-      setTimeout(() => {
-        console.log("hello");
-        setLoading(false);
-      }, 3000);
-      // console.log("hello");
+      const { data } = await axios.get(`/api/user?q=${search}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      setSearchResult(data.result);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   };
@@ -49,12 +63,14 @@ function SideDrawer({ isOpen, onClose }) {
           </Box>
           {loading ? (
             <ChatLoading />
+          ) : searchResult && searchResult.length === 0 ? (
+            <span>No results found</span>
           ) : (
-            searchResult?.map((user) => (
+            searchResult?.map((usr) => (
               <UserListItem
-                key={user._id}
-                user={user}
-                handleFunction={() => accessChat(user._id)}
+                key={usr._id}
+                user={usr}
+                handleFunction={() => accessChat(usr._id)}
               />
             ))
           )}
