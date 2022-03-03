@@ -5,7 +5,6 @@ import {
   Avatar,
   Box,
   Button,
-  Input,
   Menu,
   MenuButton,
   MenuDivider,
