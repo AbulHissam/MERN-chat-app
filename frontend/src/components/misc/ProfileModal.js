@@ -21,6 +21,7 @@ function ProfileModal({ user, children }) {
     <>
       {
         // if children is true it means MyProfile on Navbar(refer Navbar.js) else eye icon on chatbox
+        // if children is true wrap the children else display an eye icon
         children ? (
           <span onClick={onOpen}>{children}</span>
         ) : (

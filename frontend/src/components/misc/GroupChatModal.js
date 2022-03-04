@@ -33,15 +33,12 @@ function GroupChatModal({ children }) {
   const handleSubmit = async () => {
     if (!groupChatName || selectedUsers.length === 0) {
       toast({
-        title: "Please fill all the feilds",
+        title: "Please fill all the fields",
         status: "warning",
         duration: 2000,
         isClosable: true,
         position: "top",
       });
-      // setGroupChatName("");
-      // setSelectedUsers([]);
-      // setSearchResult([]);
       return null;
     }
 
@@ -57,32 +54,37 @@ function GroupChatModal({ children }) {
         },
       });
       setChats([data, ...chats]);
+      setSelectedUsers([]);
+      setSearchResult([]);
       onClose();
       toast({
         title: "New Group Chat Created!",
         status: "success",
         duration: 2000,
         isClosable: true,
-        position: "bottom",
+        position: "top",
       });
     } catch (err) {
       toast({
-        title: "Failed to Create the Chat!",
+        title: "Failed to Create Chat!",
         status: "error",
         duration: 2000,
         isClosable: true,
         position: "bottom",
       });
       // setGroupChatName("");
-      // setSelectedUsers([]);
-      // setSearchResult([]);
+      setSelectedUsers([]);
+      setSearchResult([]);
       onClose();
       console.log(err);
     }
   };
 
   const handleSearch = async (q) => {
-    if (!q) return null;
+    if (!q) {
+      setSearchResult([]);
+      return null;
+    }
     setSearch(q);
     try {
       setLoading(true);
@@ -145,7 +147,12 @@ function GroupChatModal({ children }) {
           >
             Create Group Chat
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton
+            onClick={() => {
+              setSelectedUsers([]);
+              setSearchResult([]);
+            }}
+          />
           <ModalBody d="flex" flexDir="column" alignItems="center">
             <FormControl>
               <Input
@@ -156,38 +163,40 @@ function GroupChatModal({ children }) {
             </FormControl>
             <FormControl>
               <Input
-                placeholder="Add Users eg: John, Piyush, Jane"
+                placeholder="Add Users eg: John, Jane"
                 mb={1}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
-            {loading ? (
-              <div>Loading...</div>
-            ) : (
-              <Box d="flex">
-                {selectedUsers.length !== 0 &&
-                  selectedUsers.map((usr) => {
-                    return (
-                      <UserBadgeItem
-                        key={usr._id}
-                        user={usr}
-                        handleFunction={() => handleDelete(usr)}
-                      ></UserBadgeItem>
-                    );
-                  })}
-              </Box>
-            )}
+
+            <Box d="flex">
+              {selectedUsers.length !== 0 &&
+                selectedUsers.map((usr) => {
+                  return (
+                    <UserBadgeItem
+                      key={usr._id}
+                      user={usr}
+                      handleFunction={() => handleDelete(usr)}
+                    ></UserBadgeItem>
+                  );
+                })}
+            </Box>
+
             <Box w="100%" d="flex" flexDir="column">
               {/* only top 4 results */}
-              {searchResult?.slice(0, 4).map((usr) => {
-                return (
-                  <UserListItem
-                    key={usr._id}
-                    user={usr}
-                    handleFunction={() => handleAdd(usr)}
-                  ></UserListItem>
-                );
-              })}
+              {loading ? (
+                <div style={{ textAlign: "center" }}>Loading...</div>
+              ) : (
+                searchResult?.slice(0, 4).map((usr) => {
+                  return (
+                    <UserListItem
+                      key={usr._id}
+                      user={usr}
+                      handleFunction={() => handleAdd(usr)}
+                    ></UserListItem>
+                  );
+                })
+              )}
             </Box>
           </ModalBody>
           <ModalFooter>
