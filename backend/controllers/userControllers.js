@@ -89,7 +89,7 @@ const searchUsers = async (req, res, next) => {
       }).find({ _id: { $ne: req.user.id } });
     } else {
       // return all users except the current user(req.user.id).refer->middleware/authMiddleware.js
-      matchedUsers = await User.find({});
+      matchedUsers = await User.find({ _id: { $ne: req.user.id } });
     }
     res.status(200).json({
       total: matchedUsers.length,

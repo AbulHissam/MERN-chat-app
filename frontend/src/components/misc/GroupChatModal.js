@@ -28,28 +28,57 @@ function GroupChatModal({ children }) {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { user } = ChatState();
+  const { user, chats, setChats } = ChatState();
 
-  const handleAdd = (userToAdd) => {
-    // if same reference is passed to include it also works with array of objects
-    if (selectedUsers.includes(userToAdd)) {
+  const handleSubmit = async () => {
+    if (!groupChatName || selectedUsers.length === 0) {
       toast({
-        title: "User already added",
+        title: "Please fill all the feilds",
         status: "warning",
         duration: 2000,
         isClosable: true,
         position: "top",
       });
+      // setGroupChatName("");
+      // setSelectedUsers([]);
+      // setSearchResult([]);
       return null;
     }
-    setSelectedUsers([userToAdd, ...selectedUsers]);
-  };
 
-  const handleDelete = (userToDelete) => {
-    const usersAfterDeleting = selectedUsers.filter(
-      (selectedUser) => selectedUser._id !== userToDelete._id
-    );
-    setSelectedUsers(usersAfterDeleting);
+    const payload = {
+      chatName: groupChatName,
+      users: selectedUsers.map((u) => u._id),
+    };
+    try {
+      const { data } = await axios.post("/api/chat/group", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      setChats([data, ...chats]);
+      onClose();
+      toast({
+        title: "New Group Chat Created!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom",
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to Create the Chat!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom",
+      });
+      // setGroupChatName("");
+      // setSelectedUsers([]);
+      // setSearchResult([]);
+      onClose();
+      console.log(err);
+    }
   };
 
   const handleSearch = async (q) => {
@@ -78,9 +107,33 @@ function GroupChatModal({ children }) {
     }
   };
 
+  const handleAdd = (userToAdd) => {
+    // if same reference is passed to include it also works with array of objects
+    if (selectedUsers.includes(userToAdd)) {
+      toast({
+        title: "User already added",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+        position: "top",
+      });
+      return null;
+    }
+    setSelectedUsers([...selectedUsers, userToAdd]);
+  };
+
+  const handleDelete = (userToDelete) => {
+    const usersAfterDeleting = selectedUsers.filter(
+      (selectedUser) => selectedUser._id !== userToDelete._id
+    );
+    setSelectedUsers(usersAfterDeleting);
+  };
+
   return (
     <>
+      {/* wrapping the children(Button from MyChats) */}
       <div onClick={onOpen}>{children}</div>
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -111,18 +164,21 @@ function GroupChatModal({ children }) {
             {loading ? (
               <div>Loading...</div>
             ) : (
-              selectedUsers.length !== 0 &&
-              selectedUsers.map((usr) => {
-                return (
-                  <UserBadgeItem
-                    key={usr._id}
-                    user={usr}
-                    handleFunction={() => handleDelete(usr)}
-                  ></UserBadgeItem>
-                );
-              })
+              <Box d="flex">
+                {selectedUsers.length !== 0 &&
+                  selectedUsers.map((usr) => {
+                    return (
+                      <UserBadgeItem
+                        key={usr._id}
+                        user={usr}
+                        handleFunction={() => handleDelete(usr)}
+                      ></UserBadgeItem>
+                    );
+                  })}
+              </Box>
             )}
-            <Box w="100%" d="flex" flexWrap="wrap">
+            <Box w="100%" d="flex" flexDir="column">
+              {/* only top 4 results */}
               {searchResult?.slice(0, 4).map((usr) => {
                 return (
                   <UserListItem
@@ -134,6 +190,11 @@ function GroupChatModal({ children }) {
               })}
             </Box>
           </ModalBody>
+          <ModalFooter>
+            <Button onClick={handleSubmit} colorScheme="blue">
+              Create Chat
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

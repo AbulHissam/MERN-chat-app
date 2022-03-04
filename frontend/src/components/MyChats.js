@@ -7,10 +7,14 @@ import { getSender } from "../helpers/ChatLogics";
 import ChatLoading from "./misc/ChatLoading";
 import GroupChatModal from "./misc/GroupChatModal";
 
-function MyChats() {
+function MyChats({ fetchAgain }) {
   const [loggedUser, setLoggedUser] = useState();
   const { user, chats, setChats, selectedChat, setSelectedChat } = ChatState();
   const toast = useToast();
+
+  useEffect(() => {
+    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -30,13 +34,12 @@ function MyChats() {
           isClosable: true,
           position: "bottom-left",
         });
+
         console.log(error);
       }
     };
-    // setLoggedUser(user);
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <Box
