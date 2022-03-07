@@ -8,6 +8,6 @@ const {
 const router = express.Router();
 
 router.post("/", verifyToken, createMessage);
-router.get("/:id", fetchMessages);
+router.get("/:id", verifyToken, fetchMessages);
 
 module.exports = router;

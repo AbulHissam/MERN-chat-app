@@ -1,6 +1,5 @@
 const Chat = require("../models/chatModel");
 const Message = require("../models/messageModel");
-const User = require("../models/userModel");
 
 const createMessage = async (req, res, next) => {
   try {
@@ -30,7 +29,7 @@ const createMessage = async (req, res, next) => {
       select: "name pic email",
     });
 
-    // update the chat with latestMessage
+    // update the chat with the created message as latestMessage
     // refer chatModel
     await Chat.findByIdAndUpdate({ _id: chatId }, { latestMessage: message });
 
@@ -47,12 +46,13 @@ const createMessage = async (req, res, next) => {
 const fetchMessages = async (req, res, next) => {
   try {
     const chatId = req.params.id;
-    console.log();
-    const messages = await Message.find({
+
+    let messages = await Message.find({
       chat: chatId,
     })
-      .populate("sender")
+      .populate("sender", "name email pic")
       .populate("chat");
+
     res.status(200).json(messages);
   } catch (err) {
     res.status(400).json({
