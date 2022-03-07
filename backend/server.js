@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const dotenv = require("dotenv");
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 // dotenv
 dotenv.config();
@@ -24,6 +25,10 @@ app.use("/api/user", userRoutes);
 // chat router
 // all routes with path /api/chat will be handled by chatRoutes
 app.use("/api/chat", chatRoutes);
+
+// message router
+// all routes with path /api/message will be handled by messageRoutes
+app.use("/api/message", messageRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is up on", PORT);

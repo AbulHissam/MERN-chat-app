@@ -1,6 +1,7 @@
 import React from "react";
 import { ViewIcon } from "@chakra-ui/icons";
 import {
+  Avatar,
   Button,
   IconButton,
   Image,
@@ -51,12 +52,7 @@ function ProfileModal({ user, children }) {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Image
-              borderRadius="full"
-              boxSize="150px"
-              src={user.pic}
-              alt={user.name}
-            />
+            <Avatar size="2xl" src={user.pic} name={user.name} />
             <Text
               // base is breakpoint for smaller screens
               fontSize={{ base: "28px", md: "30px" }}

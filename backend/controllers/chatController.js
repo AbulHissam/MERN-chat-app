@@ -53,10 +53,10 @@ const accessChats = async (req, res, next) => {
       res.status(200).send(fullChat);
     }
   } catch (err) {
-    next(err);
     res.status(400).json({
       error: err.message,
     });
+    next(err);
   }
 };
 

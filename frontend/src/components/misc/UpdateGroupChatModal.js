@@ -15,10 +15,10 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
+import { ViewIcon } from "@chakra-ui/icons";
 import { ChatState } from "../../Context/ContextProvider";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
-import { ViewIcon } from "@chakra-ui/icons";
 
 function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,7 +30,7 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
   const [loading, setLoading] = useState(false);
   const [renameLoading, setRenameLoading] = useState(false);
 
-  const { user, chats, setChats, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat } = ChatState();
 
   const handleSearch = async (q) => {
     if (!q) {
@@ -88,16 +88,15 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
           },
         }
       );
-      // setGroupChatName("");
-      // setSearchResult([]);
       setSelectedChat(data);
       // chats will be refetched wheneve fetchAgain changes.That's the reason we are inverting fetchAgain
       setFetchAgain(!fetchAgain);
       setRenameLoading(false);
-
+      setGroupChatName("");
       onClose();
     } catch (err) {
       setRenameLoading(false);
+      setGroupChatName("");
       console.log(err);
     }
   };
@@ -200,7 +199,8 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
           },
         }
       );
-      setSelectedChat(data);
+      // user should not see the chat if he leave from the group
+      userToRemove._id === user._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
     } catch (err) {
       toast({
