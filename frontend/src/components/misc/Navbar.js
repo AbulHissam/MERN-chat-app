@@ -15,6 +15,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
+import Badge from "@mui/material/Badge";
 import ProfileModal from "../misc/ProfileModal";
 import SideDrawer from "./SideDrawer";
 
@@ -53,7 +54,9 @@ function Navbar() {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <BellIcon fontSize="2xl" m={1} />
+              <Badge badgeContent={4} color="primary">
+                <BellIcon fontSize="2xl" m={1} />
+              </Badge>
             </MenuButton>
             <MenuList pl={2}>
               <MenuItem>Messages</MenuItem>
