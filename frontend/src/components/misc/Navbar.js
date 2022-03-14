@@ -13,14 +13,15 @@ import {
   Text,
   Tooltip,
   useDisclosure,
+  Badge,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
-import Badge from "@mui/material/Badge";
 import ProfileModal from "../misc/ProfileModal";
 import SideDrawer from "./SideDrawer";
-
+import { getSender } from "../../helpers/ChatLogics";
 function Navbar() {
-  const { user } = ChatState();
+  const { user, setSelectedChat, notifications, setNotifications } =
+    ChatState();
 
   //refer https://chakra-ui.com/docs/hooks/use-disclosure
   // for side drawer
@@ -31,6 +32,7 @@ function Navbar() {
     localStorage.removeItem("userInfo");
     navigate("/");
   };
+  console.log(notifications);
   return (
     <>
       <Box
@@ -54,12 +56,30 @@ function Navbar() {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <Badge badgeContent={4} color="primary">
-                <BellIcon fontSize="2xl" m={1} />
+              <BellIcon fontSize="2xl" m={1} />
+              <Badge colorScheme="red" variant="outline" rounded>
+                {notifications.length > 0 && notifications.length}
               </Badge>
             </MenuButton>
             <MenuList pl={2}>
-              <MenuItem>Messages</MenuItem>
+              {notifications.length === 0 && "No new messages"}
+
+              {notifications.map((ntfn) => {
+                return (
+                  <MenuItem
+                    key={ntfn._id}
+                    onClick={() => {
+                      setSelectedChat(ntfn.chat);
+                      // remove the selected notification from the notifications array
+                      setNotifications(notifications.filter((n) => n !== ntfn));
+                    }}
+                  >
+                    {ntfn.chat.isGroupChat
+                      ? `New message in ${ntfn.chat.name}`
+                      : `New message from  ${getSender(user, ntfn.chat.users)}`}
+                  </MenuItem>
+                );
+              })}
             </MenuList>
           </Menu>
 

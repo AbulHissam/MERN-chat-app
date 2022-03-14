@@ -20,7 +20,7 @@ import { ChatState } from "../../Context/ContextProvider";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 
-function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
+function UpdateGroupChatModal({ fetchAgain, setFetchAgain, fetchMessages }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -202,6 +202,8 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain }) {
       // user should not see the chat if he leave from the group
       userToRemove._id === user._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
+      // messages needs to be refetched
+      fetchMessages();
     } catch (err) {
       toast({
         title: "Error Occured!",
