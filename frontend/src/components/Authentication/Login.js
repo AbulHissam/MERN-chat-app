@@ -15,8 +15,8 @@ function Login() {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
 
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submitHandler = async () => {
@@ -58,6 +58,13 @@ function Login() {
         navigate("/chats");
       }
     } catch (err) {
+      toast({
+        title: "Login failed",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "bottom",
+      });
       setLoading(false);
       console.log(err);
     }

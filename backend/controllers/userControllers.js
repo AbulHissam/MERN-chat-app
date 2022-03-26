@@ -22,7 +22,7 @@ const registerUser = async (req, res, next) => {
     });
     if (user) {
       res.status(201).json({
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         pic: user.pic,
@@ -56,6 +56,7 @@ const authenticateUser = async (req, res, next) => {
 
     if (user && passwordMatches) {
       res.status(200).json({
+        _id: user._id,
         name: user.name,
         email: user.email,
         pic: user.pic,
@@ -65,6 +66,7 @@ const authenticateUser = async (req, res, next) => {
       throw new Error("Invalid email or password");
     }
   } catch (err) {
+    console.log(err.message);
     res.status(400).json({
       error: err.message,
     });
@@ -87,7 +89,7 @@ const searchUsers = async (req, res, next) => {
       }).find({ _id: { $ne: req.user.id } });
     } else {
       // return all users except the current user(req.user.id).refer->middleware/authMiddleware.js
-      matchedUsers = await User.find({});
+      matchedUsers = await User.find({ _id: { $ne: req.user.id } });
     }
     res.status(200).json({
       total: matchedUsers.length,
