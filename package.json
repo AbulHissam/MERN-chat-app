@@ -2,9 +2,9 @@
   "name": "chat-app",
   "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon backend/server.js"
+    "start": "node backend/server.js"
   },
   "author": "Abul Hissam",
   "license": "ISC",
